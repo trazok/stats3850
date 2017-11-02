@@ -1,0 +1,47 @@
+---
+title: "R Markdown Practice"
+author: "Michael Walker"
+date: "Sep, 13, 2017"
+output: 
+  pdf_document: 
+    fig_height: 1.5
+    fig_width: 2.5
+---
+
+
+Directions: Recreate this document using R Markdown. Make sure that you use inline R to report your answers. Your document should look like this document when it is knitted including the directions but have your name in place of   the current *Your Name*. Please print (before class) and turn in both the `*.Rmd file` and the knitted `*.pdf` file stapled to the back of your `*.Rmd` file at the start of class 9/14/17. Name your file `firstname_lastname.Rmd` (mine would be `alan_arnholt.Rmd`). Use global options to set the height and width of your figures to 1.5 and 2.5 inches, respectively.
+
+
+##Some Code
+
+
+```{r graph_stuff, include=FALSE}
+set.seed(31)
+x <- rnorm(1000, 100, 10)
+DF <- data.frame(x = x)
+library(ggplot2)
+ggplot(data = DF, aes(x = x)) +
+  geom_histogram(binwidth = 2, fill = "pink", color = "black") +
+  theme_bw() + theme(text=element_text(family="Times", size=12))
+```
+```{r ref.label='graph_stuff', eval=FALSE}
+```
+
+The mean of the graph shown below is $\bar{x} =$ `r round(mean(DF$x), 2)`. The standard deviation of the graph below is $s =$`r round(sd(DF$x), 2)`. Make sure your answers update properly and are rounded to two decimal places when the value passed to `set.seed()` changes.
+
+```{r echo=TRUE, comment=NA}
+summary(DF$x)
+```
+
+The third quartile, $Q_3$, is `r round(summary(DF$x)[5], 1)`
+
+##A Graph
+
+```{r ref.label='graph_stuff', echo=FALSE, fig.align='center'}
+
+```
+  
+##Additional Resources
+
+* http://rmarkdown.rstudio.com/
+* Cheat Sheets

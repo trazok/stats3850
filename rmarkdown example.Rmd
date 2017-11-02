@@ -1,0 +1,25 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+##example `mtcars`
+
+1. Characterize 'qsec'.
+
+#create r markdown code block
+```{r}
+hist(mtcars$qsec, col = "blue")
+Mean <- mean(mtcars$qsec)
+SD <- sd(mtcars$qsec)
+x <- (1:10)
+curve(dnorm(x, Mean, SD), 13, 23, col = "purple", add = TRUE, lwd = 3)
+```
+
+#in line code
+The mean is `r mean(mtcars$qsec)`

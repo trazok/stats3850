@@ -1,0 +1,52 @@
+---
+title: "R Markdown Practice"
+author: Michael Walker
+date: "10/3/2017"
+output: bookdown::html_document2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE, fig.align = "center", comment=NA)
+library(dplyr)
+library(ggplot2)
+library(PASWR2)
+```
+
+
+#Is there a relationship between area and price?
+To see the relatioship between `totalprice` and `area` see Figure \@ref(fig:g1).
+```{r, label="g1", fig.cap="scatterplot"}
+ggplot(data = VIT2005, aes(x=area, y=totalprice)) + geom_point(color="lightblue") + theme_bw() +geom_smooth(method = "lm", se=FALSE)
+```
+* Direction
+* Form
+* Strength
+
+
+##Correlation
+$-1 \leq r \leq 1$
+
+##Least Squares
+The equation for a simple linear regression is given in \@ref(eq:ls)
+
+\begin{equation}
+\hat{y}_i = b_0 + b_1 \cdot x_i
+(\#eq:ls)
+\end{equation}
+
+##The lm function
+```{r, eval=FALSE}
+model <- lm(response ~predictor, data=DataFrame)
+```
+
+```{r}
+model <- lm(totalprice~area, data=VIT2005)
+#area 2705 = slope of line
+model
+summary(model)
+coefficients(summary(model))
+```
+
+The price of the apartment goes up by `r round(coefficients(summary(model))[2,1],2)`
+euros for each $\text{m}^2$
+unit increase

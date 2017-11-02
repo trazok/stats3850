@@ -1,0 +1,44 @@
+---
+title: "UCB Admit"
+output: ioslides_presentation
+---
+##ucb admit slide
+[UCB](https://berkeley.edu)
+```{r, echo=FALSE, message=FALSE}
+UCB <- as.data.frame(UCBAdmissions)
+
+# Not quite what we want yet
+library(dplyr)
+ucb_admit <- UCB %>% 
+  slice(rep(1:n(), Freq)) %>% 
+  select(-Freq)
+head(ucb_admit)
+```
+
+
+## Graph
+```{r echo=FALSE}
+library(ggplot2)
+ggplot(data = ucb_admit, aes(x = Gender, fill = Admit)) + 
+  geom_bar(position = "dodge")
+```
+
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+

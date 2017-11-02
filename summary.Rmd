@@ -1,0 +1,70 @@
+---
+title: "Summary"
+author: "Michael Walker"
+date: "10/24/17"
+output: bookdown::html_document2
+---
+
+
+
+#Hypotheses
+##-------------------------------------------------------------------------------
+Hypothesis testing is used in comparative scenarios -- *"Is X more effective than Y?"* -- and utilizes two hypotheses to draw conclusions.
+
+* Null -- the null hypothesis is a hypothesis of no difference; the status quo is maintained. It can never be proven; it will either be disproven, or there will not be enough evidence to disprove it.
+ 
+
+* Alternative -- the alternative hypothesis is what is being tested for. A claim is made, and either the evidence will support it, causing the null hypothesis to be rejected, or the evidence will not support the alternative hpyothesis, causing the null hypothesis to fail to be rejected.
+
+For example, if testing a new cancer drug's efficacy, sample hypotheses might be as follows -- 
+Null: Patients who take the drug are no more likely to recover than patients who do not
+Alternative: Patients who take the drug are more likely to recover than patients who do not
+
+
+
+#Null Distribution
+##-------------------------------------------------------------------------------
+The null distribution is the distribution of data under the null hypothesis. Null samples consist of randomly shuffled variables to create a distribution. 
+
+
+#Test statistic
+##-------------------------------------------------------------------------------
+Test statistics are values derived from data during hypothesis testing. The exact statistic used can vary with which test is being used, but the ultimate goal of a given test statistic is to aid in evaluating the null hypothesis by measuring the degree of agreement between sample data and the null hypothesis.
+
+
+#P - Value
+##-------------------------------------------------------------------------------
+
+A p-value is the probability of observing data as or more extreme than what was observed, given that the null hypothesis is true.
+
+The (one-sided) p-value can be calculated by taking the mean of original values that are less than or equal to  the permutational values. In R, this looks something like
+
+```{r, eval=FALSE}
+disc_perm %>%
+  summarize(mean(diff_orig <= diff_perm))
+```
+
+In order to calculate a two-sided p-value, simply multiply the one-sided value by two. The two-sided value is used when there is no directionality to the alternative hypothesis.
+
+The generic threshhold for p-values is .05 or 5%. A p-value of .05 would be interpreted as "Assuming the null hypothesis is true, there is a 5% chance that this outcome would be observed."
+
+#Types of Errors in Hypothesis Testing
+##-------------------------------------------------------------------------------
+* Type 1 -- Type 1 errors occur when the null hypothesis is incorrectly rejected in favor of the alternative hypothesis (false positive)
+* Type 2 -- Type 2 errors occur when the alternative hypothesis is true, but the null hypothesis is not rejected (false negative)
+
+The tolerance for different types of errors can be adjusted but changing the alpha value -- the value compared with the p-value to determine if a result is sufficiently probable. Lowering the alpha value makes the null hypothesis harder to reject, resulting in more type 2 or false negative errors; whereas increasing the alpha value makes the null hypothesis easier to reject, resulting in more type 1 or false positive errors.
+
+
+#Confidence Intervals
+##-------------------------------------------------------------------------------
+Confidence intervals are an alternative to hypothesis testing which lend themselves to usage in estimation scenarios -- *"How much X results from Y?"* -- and utilizes a range of values for the parameter of interest.
+
+
+
+
+#Bootstrapping
+##-------------------------------------------------------------------------------
+Bootstrapping is used to estimate the distance between a statistic and parameter. This is accomplished by taking a sample from the population, and subsequently re-sampling the original sample with replacement.
+
+It is used to approximate the standard error.

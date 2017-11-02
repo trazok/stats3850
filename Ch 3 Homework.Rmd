@@ -1,0 +1,475 @@
+---
+title: "Chapter Three Homework Solutions"
+author: "michael walker, francis boadu"
+date: '`r format(Sys.time(), "%b %d, %Y")`'
+output: bookdown::html_document2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, comment = NA, fig.align = "center", warning = FALSE, message = FALSE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(oilabs)
+```
+
+1. In the Flight Delays Case Study in Section 1.1,
+
+    a. The data contain flight delays for two airlines, American Airlines and United Airlines.  Conduct a two-sided permutation test to see if the mean delay times between the two carriers are statistically significant.
+    
+    b. The flight delays occured in May and June of 2009.  Conduct a two-sided permutation test to see if the difference in mean delay times between the 2 months is statistically significant.
+    
+```{r}
+FD <- read.csv("http://www1.appstate.edu/~arnholta/Data/FlightDelays.csv")
+# a. Your code here
+FD <- FD %>%
+  group_by(Carrier)
+
+obs_stat <- mean(FD$Delay[1:1123]) - mean(FD$Delay[1124:4029])
+obs_stat
+
+sims <- 10^4 - 1
+
+#make answer vector
+ans <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- sample(nrow(FD), 1123, replace = FALSE)
+  
+    ans[i] <- mean(FD$Delay[index]) - mean(FD$Delay[-index])
+}
+
+pvalue <- (sum(ans >= obs_stat) + 1) / (sims + 1)
+pvalue
+
+
+
+``` 
+
+
+
+```{r}
+# b. Your code here
+FD <- read.csv("http://www1.appstate.edu/~arnholta/Data/FlightDelays.csv")
+
+FD <- FD %>%
+  group_by(Month)
+
+obs_stat <- mean(FD$Delay[1:1999]) - mean(FD$Delay[2000:4029])
+obs_stat
+
+sims <- 10^4 - 1
+
+ans <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- sample(nrow(FD), 1999, replace = FALSE)
+  
+    ans[i] <- mean(FD$Delay[index]) - mean(FD$Delay[-index])
+}
+
+pvalue <- (sum(ans >= obs_stat) + 1) / (sims + 1)
+pvalue
+
+```
+
+    
+2. In the Flight Delays Case Study in Section 1.1, the data contain flight delays for two airlines, American Airlines and United Airlines.
+
+    a. Compute the proportion of times that each carrier's flights was delayed more than 20 minutes.  Conduct a two-sided test to see if the difference in these proportions is statistically significant.
+    
+    b. Compute the variance in the flight delay lengths for each carrier.  Conduct a test to see if the variance for United Airlines is greater than that of American Airlines.
+    
+```{r}
+# a. Your code here
+FD <- read.csv("http://www1.appstate.edu/~arnholta/Data/FlightDelays.csv")
+
+FD <- FD %>%
+  group_by(Carrier)
+FD %>%  summarize(delay_prop = mean(Delay > 20))
+
+
+obs_stat <- mean(FD$Delay[1:1123] > 20) - mean(FD$Delay[1124:4029] > 20)
+obs_stat
+
+sims <- 10^4 - 1
+
+#make answer vector
+ans <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- sample(nrow(FD), 1123, replace = FALSE)
+  
+    ans[i] <- mean(FD$Delay[index] > 20) - mean(FD$Delay[-index] > 20)
+}
+
+pvalue <- (sum(ans >= obs_stat) + 1) / (sims + 1)
+pvalue
+
+
+```
+
+
+```{r}
+# b. Your code here
+FD <- read.csv("http://www1.appstate.edu/~arnholta/Data/FlightDelays.csv")
+
+FD %>%
+  group_by(Carrier) %>%
+  summarize(Variance = var(Delay))
+
+var.test(FD$Delay[1:1123], FD$Delay[1124:4029], alternative = "two.sided")
+```
+
+```{r}
+FD %>%  summarize(delay_prop = var(Delay))
+
+
+obs_stat <- var(FD$Delay[1:1123]) - var(FD$Delay[1124:4029])
+obs_stat
+
+sims <- 10^4 - 1
+
+#make answer vector
+ans <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- sample(nrow(FD), 1123, replace = FALSE)
+  
+    ans[i] <- var(FD$Delay[index]) - var(FD$Delay[-index])
+}
+
+pvalue <- (sum(ans >= obs_stat) + 1) / (sims + 1)
+pvalue
+
+```
+
+    
+    
+3. In the Flight Delays Case Study in Section 1.1, repeat Exercise 3 part (a) using three test statistics: (i) the mean of the United Airlines delay times, (ii) the sum of the United Airlines delay times, and (iii) the difference in the means, and compare the P-values. Make sure all three test statistics are computed within the same `for` loop.
+
+```{r}
+# Your code here
+FD <- read.csv("http://www1.appstate.edu/~arnholta/Data/FlightDelays.csv")
+
+FD <- FD %>%
+  filter(Carrier == "UA")
+
+UA_mean <- FD %>% mean(Delay)
+UA_sum <- sum(FD$Delay)
+mean_diff <- mean(FD$Delay[1:1123]) - mean(FD$Delay[1124:4029])
+  
+  
+
+sims <- 10^4 - 1
+
+#make answer vector
+ans1 <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- sample(nrow(FD), 1123, replace = FALSE)
+  
+    ans1[i] <- mean(FD$Delay[index]) - mean(FD$Delay[-index])
+}
+
+pvalue1 <- (sum(ans >= UA_mean) + 1) / (sims + 1)
+pvalue2 <- (sum(ans >= UA_sum) + 1) / (sims + 1)
+pvalue3 <- (sum(ans >= mean_diff) + 1) / (sims + 1)
+
+
+pvalue1
+pvalue2
+pvalue3
+```
+
+
+4. In the Flight Delays Case Study in Section 1.1,
+    
+    a. Find the 25% trimmed mean of the delay times for United Airlines and American Airlines.
+    
+    b. Conduct a two-sided test to see if the difference in trimmed means is statistically significant.
+    
+```{r}
+# Your code here
+FD <- read.csv("http://www1.appstate.edu/~arnholta/Data/FlightDelays.csv")
+
+FD <- FD %>%
+  group_by(Carrier) 
+FD %>%  summarize(trimmed_mean = mean(Delay, .25))
+
+
+obs_stat <- mean(FD$Delay[1:1123], .25) - mean(FD$Delay[1124:4029], .25)
+obs_stat
+
+sims <- 10^4 - 1
+
+#make answer vector
+ans <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- sample(nrow(FD), 1123, replace = FALSE)
+  
+    ans[i] <- mean(FD$Delay[index], .25) - mean(FD$Delay[-index], .25)
+}
+
+pvalue <- (sum(ans >= obs_stat) + 1) / (sims + 1)
+pvalue
+
+```
+    
+    
+5. In the Flight Delays Case Study in Section 1.1,
+
+    a. Compute the proportion of times the flights in May and in June were delayed more than 20 min, and conduct a two-sided test of whether the difference between months is statistically significant.
+    
+    b. Compute the variance of the flight delay times in May and June and then conduct a two-sided test of whether the ratio of variances is statistically significantly different from 1.
+    
+```{r}
+# a. Your code here
+FD <- read.csv("http://www1.appstate.edu/~arnholta/Data/FlightDelays.csv")
+
+FD <- FD %>%
+  group_by(Month) 
+FD %>%  summarize(mean(Delay > 20))
+
+
+obs_stat <- mean(FD$Delay[1:1999] > 20) - mean(FD$Delay[2000:4029] > 20)
+obs_stat
+
+sims <- 10^4 - 1
+
+#make answer vector
+ans <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- sample(nrow(FD), 1999, replace = FALSE)
+  
+    ans[i] <- mean(FD$Delay[index] > 20) - mean(FD$Delay[-index] > 20)
+}
+
+pvalue <- (sum(ans >= obs_stat) + 1) / (sims + 1)
+pvalue
+
+```
+
+```{r}
+# b. Your code here
+FD <- read.csv("http://www1.appstate.edu/~arnholta/Data/FlightDelays.csv")
+
+FD %>%
+  summarize(delay_var = var(Delay))
+
+obs_stat <- var(FD$Delay[1:1999]) - var(FD$Delay[2000:4029])
+obs_stat
+
+sims <- 10^4 - 1
+
+#make answer vector
+ans <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- sample(nrow(FD), 1999, replace = FALSE)
+  
+    ans[i] <- var(FD$Delay[index]) - mean(FD$Delay[-index])
+}
+
+pvalue <- (sum(ans >= obs_stat) + 1) / (sims + 1)
+pvalue
+
+```
+
+6. Research at the University of Nebraska conducted a study to investigate sex differences in dieting trends among a group of Midwestern college students (Davy et al. (2006)). Students were recruited from an introductory nutrition course during one term. Below are data from one question asked to 286 participants.
+
+    a. Write down the appropriate hypothesis to test to see if there is a relationship between gender and diet and then carry out the test.
+   $H_0$: Proportion of women dieting is equal to the proportion of men dieting
+   $H_A$ Proportion of women dieting is not equal to the proportion of men dieting
+   
+    b. Can the resluts be generalized to a population? Explain.
+    Yes; bootstrapping allows approximating a population from a sample
+    
+```{r, echo = FALSE}
+DT <- matrix(c(35, 146, 8, 97),nrow=2, byrow=TRUE)
+dimnames(DT) <- list(Gender =c("Women", "Men"), LowFatDiet = c("Yes", "No"))
+DT
+```
+
+```{r}
+# Your code here
+chisq.test(DT, correct = FALSE)
+```
+
+7. A national polling company conducted a survey in 2001 asking a randomly selected group of Americans of 18 years of age or older whether they supported limited use of marijuana for medicinal purposes. Here is a summary of the data:
+
+    Write down the appropriate hypothesis to test whether there is a relationship between age and support for medicinal marijuana and carry out the test.
+    $H_0$: Proportion of advocates is equal across age groups
+    $H_A$: Proportion of advocates is not equal across age groups
+  
+```{r, echo = FALSE}
+MA <- matrix(c(172, 52, 313, 103, 258, 119), nrow = 3, byrow = TRUE)
+dimnames(MA) <- list(Age = c("18-29 years old", "30-49 years old", "50 years or older"), Support = c("For", "Against"))
+MAT <- as.table(MA)
+MADF <- as.data.frame(MAT)
+DF <- as.tbl(vcdExtra::expand.dft(MADF))
+T1 <- xtabs(~Age + Support, data = DF)
+T1
+```  
+
+
+
+```{r}
+# Your code here
+chisq.test(T1, correct = FALSE)
+```
+
+
+8. Two students went to a local supermarket and collected data on cereals; they classified by their target consumer (children versus adults) and the placement of the cereal on the shelf (bottom, middle, and top). The data are given in `Cereals`.
+
+    a. Create a table to summarize the relationship between age of target consumer and shelf location.
+    
+    b. Conduct a chi-square test using R's `chisq.test` command.
+    
+    c. `R` returns a warning message. Compute the expected counts for each cell to see why.
+    
+    d. Conduct a permutation test for independence.
+    
+```{r, message = TRUE}
+Cereals <- read.csv("http://www1.appstate.edu/~arnholta/Data/Cereals.csv")
+# Your code here
+TF <- xtabs(~Age + Shelf, data = Cereals)
+TF
+chisq.test(TF, correct = FALSE)
+
+obs_stat <- chisq.test(TF, FALSE)$statistic
+obs_stat
+
+sims <- 10^4 - 1
+
+#make answer vector
+ans <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- xtabs(~sample(Age) + Shelf, data = Cereals)
+  
+    ans[i] <- chisq.test(index)$statistic
+}
+
+pvalue <- (sum(ans >= obs_stat) + 1) / (sims + 1)
+pvalue
+```
+
+
+9. From GSS 2002 Case Study in Section 1.6,
+    
+    a. Create a table to summarize the relationship between gender and the person's choice for president in the 2000 election.
+    
+    b. Test to see if a person's choice for president in the 2000 election is independent of gender (use chisq.test in `R`).
+    
+    c. Repeat the test but use the permutation test for independence. Does your conclusion change? (Be sure to remove observations with missing values)
+    
+```{r}
+GSS2002 <- read.csv("http://www1.appstate.edu/~arnholta/Data/GSS2002.csv")
+# Your code here
+
+TF <- xtabs(~Gender + Pres00, data = GSS2002) 
+
+chisq.test(TF)
+
+chisq.test(TF, correct = FALSE)
+
+obs_stat <- chisq.test(TF, FALSE)$statistic
+obs_stat
+
+sims <- 10^4 - 1
+
+#make answer vector
+ans <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- xtabs(~sample(Gender) + Pres00, data = GSS2002)
+  
+    ans[i] <- chisq.test(index)$statistic
+}
+
+pvalue <- (sum(ans >= obs_stat) + 1) / (sims + 1)
+pvalue
+
+```
+    
+
+10. From GSS 2002 Case Study in Section 1.6,
+
+    a. Create a table to summarize the relationship bewteen gender and the person's general level of happiness (`Happy`).
+    
+    b. Conduct a permutation test to see if gender and level of happiness are independent (Be sure to remove the observations with missing values).
+
+```{r}
+# Your code here
+TF <- xtabs(~Gender + Happy, data = GSS2002)
+
+chisq.test(TF, correct = FALSE)
+
+obs_stat <- chisq.test(TF, FALSE)$statistic
+obs_stat
+
+sims <- 10^4 - 1
+
+#make answer vector
+ans <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- xtabs(~sample(Gender) + Happy, data = GSS2002)
+  
+    ans[i] <- chisq.test(index)$statistic
+}
+
+pvalue <- (sum(ans >= obs_stat) + 1) / (sims + 1)
+pvalue
+
+```
+
+    
+11. From GSS 2002 Case Study in Section 1.6,
+
+    a. Create a table to summarize the relationship between support for gun laws (`GunLaw`) and views on government spending on the military (`SpendMilitary`).
+    
+    b. Conduct a permutation test to see if support for gun laws and views on government spending on the military are independent (Be sure to remove observations with missing values).
+
+    
+```{r}
+# Your code here
+TF <- xtabs(~GunLaw + SpendMilitary, data = GSS2002)
+
+chisq.test(TF, correct = FALSE)
+
+obs_stat <- chisq.test(TF, FALSE)$statistic
+obs_stat
+
+sims <- 10^4 - 1
+
+#make answer vector
+ans <- numeric(sims)
+
+for(i in 1:sims)
+{
+  index <- xtabs(~sample(GunLaw) + SpendMilitary, data = GSS2002)
+  
+    ans[i] <- chisq.test(index)$statistic
+}
+
+pvalue <- (sum(ans >= obs_stat) + 1) / (sims + 1)
+pvalue
+
+```
+    
+    

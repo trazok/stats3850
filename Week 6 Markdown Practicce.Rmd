@@ -1,0 +1,13 @@
+---
+title: "R Markdown Practice"
+output: bookdown::html_document2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE, fig.align = "center", comment=NA)
+library(dplyr)
+library(ggplot2)
+library(PASWR2)
+```
+
+## R Markdown
